@@ -1,0 +1,11 @@
+apiVersion: contour.heptio.com/v1beta1
+kind: IngressRoute
+metadata:
+  name: mountains
+  namespace: mountains
+spec:
+  routes:
+    - match: /
+      services:
+        - name: mountains
+          port: 8000

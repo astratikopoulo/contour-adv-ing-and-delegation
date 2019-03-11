@@ -1,0 +1,48 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mountains
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: mountains
+  name: mountains
+  namespace: mountains
+spec:
+  selector:
+    matchLabels:
+      app: mountains
+  replicas: 1 
+  template:
+    metadata:
+      labels:
+        app: mountains
+    spec:
+      containers:
+      - image: joshrosso/mountains:v1
+        imagePullPolicy: IfNotPresent
+        name: mountains
+        command: ["serve"]
+        ports:
+        - containerPort: 8000
+          name: http
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: mountains
+ namespace: mountains
+spec:
+ type: ClusterIP
+ ports:
+ - port: 8000
+   name: http
+   protocol: TCP
+   targetPort: 8000
+ selector:
+   app: mountains

@@ -1,0 +1,10 @@
+apiVersion: contour.heptio.com/v1beta1
+kind: TLSCertificateDelegation
+metadata:
+  name: octetz-tls
+  namespace: ingress-system
+spec:
+  delegations:
+    secretName: octetz-tls
+    targetNamespaces:
+    - mountains

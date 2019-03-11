@@ -1,0 +1,48 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ping
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: ping2
+  name: ping2
+  namespace: ping
+spec:
+  selector:
+    matchLabels:
+      app: ping2
+  replicas: 1 
+  template:
+    metadata:
+      labels:
+        app: ping2
+    spec:
+      containers:
+      - image: joshrosso/ping:v2
+        imagePullPolicy: IfNotPresent
+        name: ping2
+        command: ["serve"]
+        ports:
+        - containerPort: 8000
+          name: http
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: pingv2
+ namespace: ping
+spec:
+ type: ClusterIP
+ ports:
+ - port: 8000
+   name: http
+   protocol: TCP
+   targetPort: 8000
+ selector:
+   app: ping2

@@ -1,0 +1,18 @@
+---
+apiVersion: contour.heptio.com/v1beta1
+kind: IngressRoute
+metadata:
+  name: ping
+  namespace: ping
+spec:
+  virtualhost:
+    fqdn: ping.octetz.com
+  routes:
+    - match: /
+      services:
+        - name: pingv1
+          port: 8000
+          weight: 30
+        - name: pingv2
+          port: 8000
+          weight: 70

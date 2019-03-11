@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ping
+  namespace: ping
+spec:
+  rules:
+  - host: ping.octetz.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: pingv1
+          servicePort: 8000

@@ -1,0 +1,48 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: lines
+
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: lines
+  name: lines
+  namespace: lines
+spec:
+  selector:
+    matchLabels:
+      app: lines
+  replicas: 1 
+  template:
+    metadata:
+      labels:
+        app: lines
+    spec:
+      containers:
+      - image: joshrosso/lines:v1
+        imagePullPolicy: IfNotPresent
+        name: lines
+        command: ["serve"]
+        ports:
+        - containerPort: 8000
+          name: http
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: lines
+ namespace: lines
+spec:
+ type: ClusterIP
+ ports:
+ - port: 8000
+   name: http
+   protocol: TCP
+   targetPort: 8000
+ selector:
+   app: lines
