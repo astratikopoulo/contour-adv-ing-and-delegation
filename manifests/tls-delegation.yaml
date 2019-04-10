@@ -8,3 +8,4 @@ spec:
     secretName: octetz-tls
     targetNamespaces:
     - mountains
+    - trails

@@ -12,7 +12,7 @@ spec:
       services:
         - name: pingv1
           port: 8000
-          weight: 30
+          weight: 100
         - name: pingv2
           port: 8000
-          weight: 70
+          #weight: 80
