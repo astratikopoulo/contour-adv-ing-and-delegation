@@ -1,10 +1,10 @@
 # Contour: Advanced Ingress and Delegation
 
-Contour is an ingress controller that configures Envoy based on Ingress and IngressRoute objects in a Kubernetes cluster. This post covers how contour supports advanced ingress functionality with its [IngressRoute](https://github.com/heptio/contour/blob/master/docs/ingressroute.md) Custom Resource Definition (CRD). We'll explore some common ingress needs such as weighted load balancing and cover how multi-team ingress can be facilitated.
+Contour is an ingress controller that configures Envoy based on Ingress and IngressRoute objects in a Kubernetes cluster. This post covers how Contour supports advanced ingress functionality with its [IngressRoute](https://github.com/heptio/contour/blob/master/docs/ingressroute.md) Custom Resource Definition (CRD). We'll explore some common ingress needs such as weighted load balancing and cover how multi-team ingress can be facilitated.
 
 ## How Contour Works
 
-A simplified view of Contour is a pod with an Envoy container and controller. The controller (named contour) is responsible for reading Ingress and IngressRoute objects and creating a directed acyclic graph (DAG). Contour can then communicated with the envoy container to program routes to pods.
+A simplified view of Contour is a pod with an Envoy container and controller. The controller (named contour) is responsible for reading Ingress and IngressRoute objects and creating a directed acyclic graph (DAG). Contour can then communicate with the Envoy container to program routes to pods.
 
 <center><img src="img/pod-contour.png" width="300"></center>
 
@@ -35,7 +35,7 @@ spec:
 
 This generic object is perfect for defining how to route traffic entering at `ping.octetz.com` to the pod endpoints behind the service `pingv1`. This could be easily transposed to an NGINX, HAProxy, or Contour API.
 
-However, those who have done layer 7 routing rules know that the above object is fairly limited. It does common behavior we may want to express in our routes, such as the following.
+However, those who have done layer 7 routing rules know that the above object is fairly limited. It does not support common behavior we may want to express in our routes, such as the following.
 
 * TLS passthrough
 * TCP proxying
@@ -43,7 +43,7 @@ However, those who have done layer 7 routing rules know that the above object is
 * Route weights
 * Resource delegation
 
-This is a challenge many ingress controllers must solve for. Many move these more specific requirements into [annotations in the metadata](TODO) of the ingress objects. While this works, it can cause very messy definitions that are hard to reason with and troubleshoot. Also, annotations aren't validated on apply, so its up to the controller to fail if the value is malformed. We'd rather have the client (kubectl) be able to tell us about things such as syntactical failures.
+This is a challenge many ingress controllers must solve for. Many move these more specific requirements into [annotations in the metadata](https://github.com/kubernetes-sigs/aws-alb-ingress-controller/blob/master/docs/guide/ingress/annotation.md) of the ingress objects. While this works, it can cause very messy definitions that are hard to reason with and troubleshoot. Annotations aren't validated on apply, so it is up to the controller to fail if the value is malformed. We'd rather have the client (kubectl) be able to tell us about things such as syntactical issues.
 
 So let us look at a specific use case, canary deployments. What if we want to weight and slowly bleed traffic over to a new pingv2 application? Considering the following diagram.
 
@@ -75,7 +75,7 @@ See the [IngressRoute](https://github.com/heptio/contour/blob/master/docs/ingres
 
 ## Route Delegation
 
-Clusters supporting multiple teams have unique ingress challenges. Like many parts of Kubernetes, once a cluster is in use by more than one team, handling the multi-tenant needs or isolation becomes challenging. In Kubernetes, we often scope team's resources by namespace. Often clusters are setup to offer a shared-ingress layer. Meaning a set of load balancers and controller run inside the cluster offering layer 7 routing to different team's workloads. Consider the following running in a cluster.
+Clusters supporting multiple teams have unique ingress challenges. Like many parts of Kubernetes, once a cluster is in use by more than one team, handling the multi-tenant needs or isolation becomes challenging. In Kubernetes, we often scope team's resources by namespace. Often clusters are setup to offer a shared-ingress layer. Meaning a set of load balancers and controllers run inside the cluster offering layer 7 routing to different team's workloads. Consider the following running in a cluster.
 
 <center><img src="img/ingress-multi-team.png" width="600"></center>
 
@@ -86,12 +86,12 @@ Notice the `host` value highlighted in yellow in the `team-a` and `team-b` names
 * Why was `team-b` able to request `a.team.com`? 
 * How can we reserve such such domains to only `team-a`?
 
-There are a multitude of ways to solve this. One is to implement a [ValidatingWebhook](https://github.com/stevesloka/validatingwebhook) admission controller capable of ensuring teams only request their "owned" domains. Another is to rely on delegation of the ingress controller itself. This is where Contour shines. By implementing an administrative ingress namespace, we can create delegation rules for the ingress rules requested by other teams / namespaces. Consider the following, revised, model.
+There are a multitude of ways to solve this. One is to implement a [ValidatingWebhook](https://github.com/stevesloka/validatingwebhook) admission controller capable of ensuring teams only request their "owned" domains. Another is to rely on delegation of the ingress controller itself. This is where Contour shines. By implementing an administrative ingress namespace, we can create delegation rules for the ingress rules requested by other teams or namespaces. Consider the following, revised, model.
 
 
 <center><img src="img/delegation.png" width="800"></center>
 
-In the above, you can see a new namespace, `ingress-system`. This namespaces contains delegation rules for the FQDN and routes a namespaces is allowed to write rules for. As you can see in the `lines` namespace, if an IngressRoute is created referencing the FQDN `mountains.octetz.com`, the route is not created.
+In the above, you can see a new namespace, `ingress-system`. This namespace contains delegation rules for the FQDN and routes a namespace is allowed to write rules for. As you can see in the `lines` namespace, if an IngressRoute is created referencing the FQDN `mountains.octetz.com`, the route is not created.
 
 An example of this Mountains delegation rule is as follows.
 
@@ -111,7 +111,7 @@ spec:
         namespace: mountains
 ```
 
-Subsequently, when the IngressRoute is created for `mountains` in the `mountains` namespace, it will feature a simpler structure, as folllows.
+Subsequently, when the IngressRoute is created for `mountains` in the `mountains` namespace, it will feature a simpler structure, as follows.
 
 ```yaml
 apiVersion: contour.heptio.com/v1beta1
@@ -133,7 +133,7 @@ To run in this delegated mode, simply add `--ingressroute-root-namespaces=ingres
 
 ## TLS Certificate Delegation
 
-TLS Certificates face a similar issue in a multi-team environment. Often teams must add their own certificate and key as a secret in Kubernetes and then reference that secret in the ingress object. Most ingress controllers understand this and are able to serve the certificate on behalf of the application. Additionally, some ingress controller support the notion of a "default" certificate. This is often a wildcard certificate that can be used across the entire organization. The following diagram details these different means of certificate resolution.
+TLS Certificates face a similar issue in a multi-team environment. Often teams must add their own certificate and key as a secret in Kubernetes and then reference that secret in the ingress object. Most ingress controllers understand this and are able to serve the certificate on behalf of the application. Additionally, some ingress controllers support the notion of a "default" certificate. This is often a wildcard certificate that can be used across the entire organization. The following diagram details these different means of certificate resolution.
 
 <center><img src="img/cert.png" width="600"></center>
 
@@ -148,7 +148,7 @@ Similar to route delegation, we can introduce TLSCertificateDelegation objects t
 
 <center><img src="img/tls-delegation.png" width="400"></center>
 
-In the same `ingress-system` namespace, we can add certificates (as Kubernetes secrets). These can then be referenced by a `TLSCertificateDelegation` objects. These objects hold a list of namespaces that can reference the certificate from their `IngressRoute` objects. In the diagram above, when lines attempts to reference the octetz-tls secret, the route will not be created. IngressRoutes must also prefix the secret name with the namespace it is stored (not represented in the diagram above). An example delegation object is as follows.
+In the same `ingress-system` namespace, we can add certificates (as Kubernetes secrets). These can then be referenced by a `TLSCertificateDelegation` objects. These objects hold a list of namespaces that can reference the certificate from their `IngressRoute` objects. In the diagram above, when the lines namespace attempts to reference the `octetz-tls` secret, the route is not created. IngressRoutes must also prefix the secret name with the namespace it is stored (not represented in the diagram above). An example delegation object is as follows.
 
 ```yaml
 apiVersion: contour.heptio.com/v1beta1
