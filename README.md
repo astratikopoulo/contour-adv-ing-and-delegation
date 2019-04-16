@@ -2,7 +2,7 @@
 
 Contour is an ingress controller that configures Envoy based on Ingress and IngressRoute objects in a Kubernetes cluster. This post covers how Contour supports advanced ingress functionality with its [IngressRoute](https://github.com/heptio/contour/blob/master/docs/ingressroute.md) Custom Resource Definition (CRD). We'll explore some common ingress needs such as weighted load balancing and cover how multi-team ingress can be facilitated.
 
-<iframe width="800" height="450" src="https://www.youtube.com/embed/O7HfkgzD7Z0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<center><iframe width="800" height="450" src="https://www.youtube.com/embed/O7HfkgzD7Z0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></center>
 
 ## How Contour Works
 
