@@ -1,3 +1,13 @@
+---
+title: Contour - Advanced Ingress with Envoy
+header-includes:
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="octetz.com" />
+    <meta name="twitter:title" content="Contour - Advanced Ingress with Envoy" />
+    <meta name="twitter:description" content="A look at how Contour facilitates advanced ingress, route delegation, and certificate delegation using Envoy." />
+    <meta name="twitter:image" content="https://octetz.com/posts/img/contour-adv-ing-banner.png" />
+---
+
 # Contour: Advanced Ingress with Envoy
 
 Contour is an ingress controller that configures Envoy based on Ingress and IngressRoute objects in a Kubernetes cluster. This post covers how Contour supports advanced ingress functionality with its [IngressRoute](https://github.com/heptio/contour/blob/master/docs/ingressroute.md) Custom Resource Definition (CRD). We'll explore some common ingress needs such as weighted load balancing and cover how multi-team ingress can be facilitated.
