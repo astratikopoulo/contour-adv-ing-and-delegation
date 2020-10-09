@@ -1,4 +1,6 @@
 // This code exists only to facilitate a simple demo.
+// This code exists only to facilitate a simple demo.
+
 package main
 
 import (
