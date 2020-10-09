@@ -5,7 +5,7 @@ metadata:
   namespace: ping
 spec:
   rules:
-  - host: ping.octetz.com
+  - host: ping.grego.corp.local
     http:
       paths:
       - path: /
