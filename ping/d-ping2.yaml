@@ -3,23 +3,23 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: ping2
-  name: ping2
+    app: ping
+  name: ping
   namespace: ping
 spec:
   selector:
     matchLabels:
-      app: ping2
+      app: ping
   replicas: 1
   template:
     metadata:
       labels:
-        app: ping2
+        app: ping
     spec:
       containers:
-      - image: joshrosso/ping:v2
+      - image: joshrosso/ping:v1
         imagePullPolicy: IfNotPresent
-        name: ping2
+        name: ping
         command: ["serve"]
         ports:
         - containerPort: 8000
@@ -29,7 +29,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
- name: pingv2
+ name: pingv1
  namespace: ping
 spec:
  type: ClusterIP
@@ -39,4 +39,4 @@ spec:
    protocol: TCP
    targetPort: 8000
  selector:
-   app: ping2
+   app: ping
